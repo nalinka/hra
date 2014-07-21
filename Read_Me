@@ -1,0 +1,9 @@
+submit: 
+
+git add .
+git commit -m 'Nazov commitu'
+git push origin master
+
+get new version
+
+git pull origin master
