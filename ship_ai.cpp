@@ -1,5 +1,13 @@
 #include "ship_ai.h"
 
+#include "ship.h"
+
+int abs(int a) {
+	if (a < 0)
+		return -a;
+	return a;
+}
+
 int Exhaustive3Step::Decide(const World &world) {
 	int best_move = 0;
 	double best_score = -100000;	
@@ -38,7 +46,7 @@ int Exhaustive3Step::Decide(const World &world) {
 				if (world.Get(x3, y3) == WORLD_FULL)
 					continue;
 				score3 += 100;
-				score3 -= 0.01 * abs(y1 - world.GetHeight() / 2);
+//				score3 -= 0.01 * abs(y1 - world.GetHeight() / 2);
 				score3 -= abs(y3 - world.GetHeight() / 2);
 				if (best_score < score3) {
 					best_score = score3;

@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "ship.h"
+#include "ship_ai.h"
 #include "world.h"
 
 int PlayGame(){
@@ -10,6 +11,7 @@ int PlayGame(){
 	int h = 15;
 	World world(w, h);
 	Ship bu;
+  bu.SetAI(new Exhaustive3Step());
 	int survive_time = -w;
 	bool printing = false;
 	while(1) {

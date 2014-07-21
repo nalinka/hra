@@ -1,5 +1,9 @@
 #include "ship.h"
 
+#include <cstdio>
+#include <cstdlib>
+#include "ship_ai.h"
+
 int dx[] = { 0,  0,  0};
 int dy[] = {-1,  0, +1};
 
@@ -14,7 +18,18 @@ int abs(int a) {
 	return a;
 }
 
+void Ship::SetAI(ShipAI *ai) {
+  ai_.reset(ai);
+  ai_->SetShip(this);
+}
+
 int Ship::Decide(const World &world) {
+  if (!ai_) {
+    fprintf(stderr, "%s: %d: ai_ not initialized.\n", __FILE__, __LINE__);
+    exit(-1);
+  }
+  return ai_->Decide(world);
+
 	int best_move = 0;
 	double best_score = -100000;	
 //	set<pair<int, int> > visited;
