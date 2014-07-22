@@ -14,7 +14,20 @@ class ShipAI {
   virtual int Decide(const World &world) = 0;
 };
 
-class Exhaustive3Step : public ShipAI {
+class Exhaustive3StepAI : public ShipAI {
+  bool stay_in_mid_;
+ public:
+  Exhaustive3StepAI(bool stay_in_mid) : stay_in_mid_(stay_in_mid) {};
+	int Decide(const World &world);
+};
+
+class OneStepForwardAI : public ShipAI {
+ public:
+	int Decide(const World &world);
+};
+
+class BuAI : public ShipAI {
+ public:
 	int Decide(const World &world);
 };
 

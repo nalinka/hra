@@ -8,7 +8,7 @@ int abs(int a) {
 	return a;
 }
 
-int Exhaustive3Step::Decide(const World &world) {
+int Exhaustive3StepAI::Decide(const World &world) {
 	int best_move = 0;
 	double best_score = -100000;	
 //	set<pair<int, int> > visited;
@@ -46,7 +46,8 @@ int Exhaustive3Step::Decide(const World &world) {
 				if (world.Get(x3, y3) == WORLD_FULL)
 					continue;
 				score3 += 100;
-//				score3 -= 0.01 * abs(y1 - world.GetHeight() / 2);
+				if (stay_in_mid_)
+  				score3 -= 0.01 * abs(y1 - world.GetHeight() / 2);
 				score3 -= abs(y3 - world.GetHeight() / 2);
 				if (best_score < score3) {
 					best_score = score3;
@@ -58,3 +59,69 @@ int Exhaustive3Step::Decide(const World &world) {
 	}
 	return best_move + 1;
 }
+
+int OneStepForwardAI::Decide(const World &world) {
+ 	int Position = 0;
+	if (ship_->GetY() > world.GetHeight() /2 )
+		Position = -1;
+	if (ship_->GetY() == world.GetHeight() /2 )
+		Position = 0;
+	if (ship_->GetY() < world.GetHeight() /2 )
+		Position = 1;
+		
+	bool free_up = world.Get(ship_->GetX() + 1, ship_->GetY() - 1) == WORLD_FREE;
+	bool free_mid = world.Get(ship_->GetX() + 1, ship_->GetY()) == WORLD_FREE;
+	bool free_down = world.Get(ship_->GetX() + 1, ship_->GetY() + 1) == WORLD_FREE;
+	
+	// If in lower half.
+	if (Position == -1){
+		if (free_up)
+			return SHIP_UP;
+		if (free_mid)
+			return SHIP_STAY;
+		return SHIP_DOWN;
+	}
+
+	// If in middle half.
+	if (Position == 0){
+		if (free_mid)
+			return SHIP_STAY;
+		if (free_up)
+			return SHIP_UP;
+		return SHIP_DOWN;
+	}
+
+	// If in upper half.
+	if (Position == 1){
+		if (free_down)
+			return SHIP_DOWN;
+		if (free_mid)
+			return SHIP_STAY;
+		return SHIP_UP;
+	}
+}
+
+int BuAI::Decide(const World &world) {
+if (world.Get(ship_->GetX()+1, ship_->GetY()) == WORLD_FULL){
+		if(world.Get(1, ship_->GetY() + 1) == WORLD_FULL )		
+			return SHIP_UP;
+		if(world.Get(1, ship_->GetY() - 1) == WORLD_FULL)		
+			return SHIP_DOWN;
+		if(world.Get(1, ship_->GetY() - 1) == WORLD_FREE && world.Get(1, ship_->GetY() + 1) == WORLD_FREE)
+			if(ship_->GetY() <= world.GetHeight() /2 )			
+				return SHIP_DOWN;
+			if(ship_->GetY() > world.GetHeight() /2 )			
+				return SHIP_UP;
+	}
+	else{
+		if(world.Get(ship_->GetX()+1, ship_->GetY() - 1) == WORLD_FREE || world.Get(ship_->GetX()+1, ship_->GetY() + 1) == 	WORLD_FREE){
+			if(ship_->GetY() < world.GetHeight() /2 )			
+				return SHIP_DOWN;
+			if(ship_->GetY() > world.GetHeight() /2 )			
+				return SHIP_UP;
+		}
+		else
+			return SHIP_STAY;
+	}
+}
+

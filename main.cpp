@@ -11,9 +11,12 @@ int PlayGame(){
 	int h = 15;
 	World world(w, h);
 	Ship bu;
-  bu.SetAI(new Exhaustive3Step());
+  bu.SetAI(new OneStepForwardAI());
+  bu.SetAI(new BuAI());
+  bu.SetAI(new Exhaustive3StepAI(true));
 	int survive_time = -w;
 	bool printing = false;
+	
 	while(1) {
 		// Get user update
 		int bu_way = bu.Decide(world);
