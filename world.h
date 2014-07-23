@@ -10,6 +10,7 @@ class World {
  public:
 	World(int w, int h);
 	int GetHeight() const;
+	int GetWidth() const;
 	void Print(int sx, int sy);
 	void Shift();
 	int Get(int x, int y) const ;

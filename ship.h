@@ -10,6 +10,9 @@
 
 class ShipAI;
 
+int dx[] = { 0,  0,  0};
+int dy[] = {-1,  0, +1};
+
 class Ship {
  public:
  	Ship();

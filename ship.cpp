@@ -4,9 +4,6 @@
 #include <cstdlib>
 #include "ship_ai.h"
 
-int dx[] = { 0,  0,  0};
-int dy[] = {-1,  0, +1};
-
 Ship::Ship() {
 	x_ = 0;
 	y_ = 0;

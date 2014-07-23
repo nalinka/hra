@@ -25,6 +25,10 @@ int World::GetHeight() const {
 	return h_;
 }
 
+int World::GetWidth() const {
+	return w_;
+}
+
 int World::Get(int x, int y) const {
 	if (x < 0 || x >= w_ || y < 0 || y >= h_)
 		return WORLD_FULL;

@@ -31,4 +31,9 @@ class BuAI : public ShipAI {
 	int Decide(const World &world);
 };
 
+class DFSAI : public ShipAI {
+ public:
+	int Decide(const World &world);
+};
+
 #endif

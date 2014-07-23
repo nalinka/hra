@@ -2,6 +2,12 @@
 
 #include "ship.h"
 
+#include <utility>
+#include <stack>
+#include <vector>
+
+using namespace std;
+
 int abs(int a) {
 	if (a < 0)
 		return -a;
@@ -102,7 +108,7 @@ int OneStepForwardAI::Decide(const World &world) {
 }
 
 int BuAI::Decide(const World &world) {
-if (world.Get(ship_->GetX()+1, ship_->GetY()) == WORLD_FULL){
+  if (world.Get(ship_->GetX()+1, ship_->GetY()) == WORLD_FULL){
 		if(world.Get(1, ship_->GetY() + 1) == WORLD_FULL )		
 			return SHIP_UP;
 		if(world.Get(1, ship_->GetY() - 1) == WORLD_FULL)		
@@ -125,3 +131,42 @@ if (world.Get(ship_->GetX()+1, ship_->GetY()) == WORLD_FULL){
 	}
 }
 
+int DFSAI::Decide(const World &world) {
+  pair<int, int> start = make_pair(ship_->GetX(), ship_->GetY());
+  vector< vector <int>> back;
+  const int NOT_VISITED = 100;
+  back.resize(world.GetWidth());
+  for (int i = 0; i < back.size(); i++) {
+    back[i].resize(world.GetHeight());
+    for (int j = 0; j < back[i].size(); j++) {
+      back[i][j] = NOT_VISITED;
+    }
+  }
+  
+  int furtherest_dist = 0;
+  pair<int, int> furtherest;
+  
+  stack<pair<int, int>> to_visit;
+  to_visit.push(start);
+  while (!to_visit.empty()) {
+    int x = to_visit.top().first;
+    int y = to_visit.top().second;
+    to_visit.pop();
+    
+    if (furtherest_dist < x) {
+      furtherest_dist = x;
+      furtherest = make_pair(x, y);
+    }
+    
+    for (int i = 0; i < 3; i++) {
+      int nx = x + dx[i] + 1;
+      int ny = y + dy[i];
+      if (world.Get(nx, ny) != WORLD_FREE)
+        continue;
+      if (back[nx][ny] != NOT_VISITED)
+        continue;
+      back[nx][ny] = i;
+      to_visit.push(make_pair(nx, ny));
+    }
+  }
+}
