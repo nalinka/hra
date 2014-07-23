@@ -171,7 +171,7 @@ int DFSAI::Decide(const World &world) {
     }
     for (int i = 0; i < back[0].size(); i++) {
 		  for (int j = 0; j < back.size(); j++) {
-				printf("%3d", back[j][i], i, j);
+				printf("%3d", back[j][i]);
 			}
   		printf("\n");
     }	
