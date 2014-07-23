@@ -9,6 +9,9 @@ Ship::Ship() {
 	y_ = 0;
 }
 
+int dx[] = { 0,  0,  0};
+int dy[] = {-1,  0, +1};
+
 void Ship::SetAI(ShipAI *ai) {
   ai_.reset(ai);
   ai_->SetShip(this);
