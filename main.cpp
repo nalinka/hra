@@ -7,13 +7,14 @@
 #include "world.h"
 
 int PlayGame(){
-	int w = 40;
-	int h = 15;
+	int w = 10;
+	int h = 5;
 	World world(w, h);
 	Ship bu;
   bu.SetAI(new OneStepForwardAI());
   bu.SetAI(new BuAI());
   bu.SetAI(new Exhaustive3StepAI(true));
+  bu.SetAI(new DFSAI());
 	int survive_time = -w;
 	bool printing = false;
 	

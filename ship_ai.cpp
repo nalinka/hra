@@ -5,6 +5,7 @@
 #include <utility>
 #include <stack>
 #include <vector>
+#include <cstdio>
 
 using namespace std;
 
@@ -134,7 +135,7 @@ int BuAI::Decide(const World &world) {
 int DFSAI::Decide(const World &world) {
   pair<int, int> start = make_pair(ship_->GetX(), ship_->GetY());
   vector< vector <int>> back;
-  const int NOT_VISITED = 100;
+  const int NOT_VISITED = 8;
   back.resize(world.GetWidth());
   for (int i = 0; i < back.size(); i++) {
     back[i].resize(world.GetHeight());
@@ -168,18 +169,23 @@ int DFSAI::Decide(const World &world) {
       back[nx][ny] = i;
       to_visit.push(make_pair(nx, ny));
     }
-    for (int i = 0; i < back.size(); i++) {
-		  for (int j = 0; j < back[i].size(); j++) {
-				printf("Back %d %d %d", back[i][j], i, j);
+    for (int i = 0; i < back[0].size(); i++) {
+		  for (int j = 0; j < back.size(); j++) {
+				printf("%3d", back[j][i], i, j);
 			}
-		printf("\n");
+  		printf("\n");
     }	
+ 		printf("\n");
     
     stack<pair<int, int>> to_visit_copy;
     to_visit_copy = to_visit;
+    printf("To visit:");
     while (!to_visit_copy.empty()) {
-      printf("To visit %d %d", to_visit_copy.top().first, to_visit_copy.top().second);
+      printf("(%d %d) ", to_visit_copy.top().first, to_visit_copy.top().second);
       to_visit_copy.pop();
     }
+    printf("\n");
+    getchar();
   }
+  return SHIP_STAY;
 }
