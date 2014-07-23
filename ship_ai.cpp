@@ -169,13 +169,17 @@ int DFSAI::Decide(const World &world) {
       to_visit.push(make_pair(nx, ny));
     }
     for (int i = 0; i < back.size(); i++) {
-      for (int j = 0; j < back[i].size(); j++) {
-        printf("Back %d of %d %d", back[i][j], i ,j);
-      }
-    }
-    while (!to_visit.empty()) {
-      printf("To visit %d %d", to_visit.top().first, to_visit.top().second);
-      to_visit.pop();
+		  for (int j = 0; j < back[i].size(); j++) {
+				printf("Back %d %d %d", back[i][j], i, j);
+			}
+		printf("\n");
+    }	
+    
+    stack<pair<int, int>> to_visit_copy;
+    to_visit_copy = to_visit;
+    while (!to_visit_copy.empty()) {
+      printf("To visit %d %d", to_visit_copy.top().first, to_visit_copy.top().second);
+      to_visit_copy.pop();
     }
   }
 }
