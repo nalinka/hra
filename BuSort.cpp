@@ -3,17 +3,17 @@
 
 using namespace std;
 
-int BuSort{
+int main {
   int pocet;
   vector<int> list;
   
   scanf("%d", &pocet);
   list.resize(pocet);
-  for(int k; k < pocet; k++){
-    scanf("%d",&list[k]);
+  for(int i =0 ; i < pocet; i++){
+    scanf("%d",&list[i]);
   } 
-  for(int i; i < list.size; i++{
-    for(int j; j< list.size; j ++){
+  for(int i= 0; i < list.size; i++){
+    for(int j = 0; j< list.size; j ++){
       if(list[j] < list[j+1]){
         continue;
       else{
