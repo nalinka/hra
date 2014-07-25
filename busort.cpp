@@ -6,6 +6,7 @@ using namespace std;
 
 vector <int> bubble(vector<int> list);
 vector <int> insert(vector<int> list);
+vector <int> mergesort(vector<int> list);
 
 int main(){
   int pocet;
@@ -17,7 +18,8 @@ int main(){
     scanf("%d", &list[i]);
   }
   
-  zoznam_vrat = bubble(list);
+  zoznam_vrat = mergesort(list);
+  //zoznam_vrat = bubble(list);
   //zoznam_vrat = insert(list);
   
   for(int i = 0 ; i < list.size(); i++) {
@@ -53,4 +55,37 @@ vector <int> insert(vector<int> list) {
   }
   return list; 
 }
+
+vector <int> merge(vector<int> left, vector<int> right){
+  vector <int> zoznam;
+  while(right.size() > 0 || left.size() > 0){
+    if(left[0] < right[0]){
+      zoznam.push_back(left[0]);
+      left.erase(left.begin()); 
+    }
+    else{
+      zoznam.push_back(right[0]);
+      right.erase(right.begin()); 
+    }
+  }
+}
+
+vector <int> mergesort(vector<int> list) {
+  int m = list.size() / 2;
+  vector <int> right;
+  vector <int> left;
+  
+  for(int i = 0; i < m; i++){
+    right[i] = list[i];
+  }
+  for(int i = m; i < list.size(); i++){
+    left[i] = list[i];
+  }
+  
+  mergesort(right);
+  mergesort(left);
+  
+  return merge(left, right);  
+}
+
 
