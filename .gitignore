@@ -1,5 +1,18 @@
+# Ignore all files
 *
-!*.cpp
-!*.h
+
+# ! in front is negation - override above and include it
+
+# Include folders
+!*/
+
+# Include few special filenames
+!.gitignore
 !Makefile
-!Readme
+!README
+
+# Include all .h, .cpp and .in files
+!*.h
+!*.cpp
+!*.in
+
