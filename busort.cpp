@@ -58,6 +58,7 @@ vector <int> insert(vector<int> list) {
 
 vector <int> merge(vector<int> left, vector<int> right){
   vector <int> zoznam;
+  
   while(right.size() > 0 || left.size() > 0){
     if(left[0] < right[0]){
       zoznam.push_back(left[0]);
@@ -68,18 +69,23 @@ vector <int> merge(vector<int> left, vector<int> right){
       right.erase(right.begin()); 
     }
   }
+  return zoznam;
 }
 
 vector <int> mergesort(vector<int> list) {
+
+  if(list.size() == 1)
+    return list;
+  
   int m = list.size() / 2;
   vector <int> right;
   vector <int> left;
   
   for(int i = 0; i < m; i++){
-    right[i] = list[i];
+    right.push_back(list[i]);
   }
   for(int i = m; i < list.size(); i++){
-    left[i] = list[i];
+    left.push_back(list[i]);
   }
   
   mergesort(right);
