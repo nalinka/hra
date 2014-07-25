@@ -45,16 +45,11 @@ vector <int> bubble(vector<int> list) {
 vector <int> insert(vector<int> list) {
   
   for(int i = 1; i < list.size(); i++) {
-    int swaped = 0;
-    for(int j = 0; j < list.size() ; j++) {
-      if(list[j] > list[i]) {
-          swap(list[i], list[j]);
-          swaped = swaped + 1;
+    for(int j = i - 1; j >= 0 ; j--) {
+      if(list[j] < list[j-1]) {
+          swap(list[j], list[j-1]);
        }
-     }
- 
-    if (swaped == 0)
-      break; 
+     } 
   }
   return list; 
 }
