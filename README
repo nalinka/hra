@@ -1,0 +1,17 @@
+submit: 
+
+git clone https://github.com/nalinka/hra.git
+git add .
+git commit -m 'Nazov commitu'
+git push origin master
+
+get new version
+
+git pull origin master
+
+# Line used to learn about .gitignore 
+git rm -r --cached . ; git add . ; git status
+
+
+# Prints local changes
+git status
