@@ -4,31 +4,15 @@
 
 using namespace std;
 
-vector <int> bubble(vector<int> list);
-vector <int> insert(vector<int> list);
-vector <int> mergesort(vector<int> list);
-
-int main(){
-  int pocet;
-  vector<int> list;
-  vector<int> zoznam_vrat;
-  scanf("%d", &pocet);
-  list.resize(pocet);
-  for(int i = 0 ; i < pocet; i++) {
-    scanf("%d", &list[i]);
+void PrintVector(vector<int> list) {
+  printf("[ ");
+  for(int i = 0; i < list.size(); i++){
+    printf("%d ",list[i]);
   }
-  
-  zoznam_vrat = mergesort(list);
-  //zoznam_vrat = bubble(list);
-  //zoznam_vrat = insert(list);
-  
-  for(int i = 0 ; i < list.size(); i++) {
-    printf("%d \n", zoznam_vrat[i]);
-  }
+  printf("]\n");
 }
 
-vector <int> bubble(vector<int> list) {
-  
+vector <int> BubbleSort(vector<int> list) {
   for(int i = 0; i < list.size(); i++) {
     int swaped = 0;
     for(int j = 0; j + 1 < list.size() - i; j++) {
@@ -44,8 +28,7 @@ vector <int> bubble(vector<int> list) {
   return list; 
 }
 
-vector <int> insert(vector<int> list) {
-  
+vector <int> InsertSort(vector<int> list) {
   for(int i = 1; i < list.size(); i++) {
     for(int j = i - 1; j >= 0 ; j--) {
       if(list[j] < list[j-1]) {
@@ -56,25 +39,8 @@ vector <int> insert(vector<int> list) {
   return list; 
 }
 
-vector <int> merge(vector<int> left, vector<int> right){
-  vector <int> zoznam;
-  
-  while(right.size() > 0 || left.size() > 0){
-    if(left[0] < right[0]){
-      zoznam.push_back(left[0]);
-      left.erase(left.begin()); 
-    }
-    else{
-      zoznam.push_back(right[0]);
-      right.erase(right.begin()); 
-    }
-  }
-  return zoznam;
-}
-
-vector <int> mergesort(vector<int> list) {
-
-  if(list.size() == 1)
+vector <int> MergeSort(vector<int> list) {
+  if(list.size() <= 1)
     return list;
   
   int m = list.size() / 2;
@@ -88,10 +54,110 @@ vector <int> mergesort(vector<int> list) {
     left.push_back(list[i]);
   }
   
-  mergesort(right);
-  mergesort(left);
+  right = MergeSort(right);
+  left = MergeSort(left);
   
-  return merge(left, right);  
+  //kym jedno alebo druhe nieje na konci,
+  //pozri sa na prve meisto v oboch poliach a porovnaj ich. 
+  //Mensie z nich push back na koniec retu;
+  //v poli z ktoreho si ho zobral sa posun na dalsie miesto 
+  vector <int> ret;
+  int lp = 0;
+  int rp = 0;
+  while(rp != right.size() && lp != left.size()){
+    if(right[rp] > left[lp]){
+      ret.push_back(left[lp]);
+      lp++;
+    } else {
+      ret.push_back(right[rp]);
+      rp++;
+    }
+  }
+  while(lp != left.size()){
+    ret.push_back(left[lp]);
+    lp++;
+  } 
+  while(rp != right.size()){
+    ret.push_back(right[rp]);
+    rp++;
+  }
+  return ret;
 }
 
+//najdi pivota a daj ho na koniec
+//posuvaj pointer zo zaciatku ku stredu kym nenarazis na cislo vecie nez je pointer
+//posuvaj pointer z konca...
+// vymen tie cisla
+//opakuj kym sa dva pointre netretnu
+// zvol pivota....
+vector <int> QuickSort(vector<int> list) {
+  if(list.size() <= 1)
+    return list;
+  if(list.size() == 2){
+    if(list[0] > list[1])
+      swap(list[0], list[1]);
+    return list;
+  }
+  swap(list[list.size() / 2], list[list.size() -1]);
+  int sp = 0;
+  int ep = list.size() - 2;
+  while(sp < ep){
+    while(list[sp] < list[list.size() -1]){
+      sp++;
+    }
+    while(list[ep] >= list[list.size() -1]){
+      ep--;   
+    }
+    if(sp < ep)
+      swap(list[sp], list[ep]);
+  }
+  vector <int> left;
+  vector <int> right;
+  
+  for(int i = 0; i < sp; i++){
+    left.push_back(list[i]);
+  }
+  for(int i = sp; i < list.size(); i++){
+    right.push_back(list[i]);
+  }
+  right = QuickSort(right);
+  left = QuickSort(left);  
+  
+  for(int i = 0; i < right.size(); i++){
+    left.push_back(right[i]);
+  }
+  return left;
+}
+
+class BuHeap{
+  vector <int> heap;
+  
+  vector <int> Insert(int bu_new){
+    heap.push_back(bu_new);
+    int position_new = heap.size();
+    while(heap[position_new] < heap[position_new / 2]){
+        swap(heap[position_new], heap[position_new / 2]);
+        position_new = position_new / 2;
+    }
+  }
+  
+  vector <int> PopMin(vector<int> heap){
+  }
+};
+
+int main(){
+  int pocet;
+  vector<int> list;
+  scanf("%d", &pocet);
+  list.resize(pocet);
+  for(int i = 0 ; i < pocet; i++) {
+    scanf("%d", &list[i]);
+  }
+  list = QuickSort(list);
+  //list = MergeSort(list);
+  //list = BubbleSort(list);
+  //list = InsertSort(list);
+  
+  PrintVector(list);
+}
 
