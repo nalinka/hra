@@ -130,33 +130,43 @@ vector <int> QuickSort(vector<int> list) {
 }
 
 class BuHeap{
+ public: 
   vector <int> heap;
-  
+ private: 
   void Insert(int bu_new){
     heap.push_back(bu_new);
     int position_new = heap.size() - 1;
-    while(heap[position_new] < heap[position_new / 2]){
-        swap(heap[position_new], heap[position_new / 2]);
-        position_new = position_new / 2;
+    while(heap[position_new] < heap[(position_new / 2) - 1 ]){
+        swap(heap[position_new], heap[(position_new / 2) -1 ]);
+        position_new = (position_new / 2) -1;
     }
   }
   
   int PopMin(){
     swap(heap[0], heap[heap.size() - 1]);
     int position_start = 0;
-    while(heap[2 * position_start +1 ] < heap[position_start]){
-        swap(heap[position_start], heap[2 * position_start +1 ]);
+    while(heap[2 * position_start +1 ] < heap[position_start] || heap[2 * position_start + 2] < heap[position_start]){
+      if(position_start >= heap.size())
+        break;
+      if(heap[2 * position_start +1 ] < heap[2 * position_start + 2 ]){
+        swap(heap[position_start], heap[2 * position_start + 1]);
         position_start = 2 * position_start +1;
-    }
-    while(heap[2 * position_start + 2] < heap[position_start]){
+      } else{
         swap(heap[position_start], heap[2 * position_start + 2]);
         position_start = 2 * position_start + 2;
+      }
     }
     int min = heap[heap.size() - 1];
     heap.pop_back();
     return min; 
   }
 };
+
+vector <int> HeapSort(vector<int> list) {
+  for(int i =0; i < list.size(); i++){
+    BuHeap::heap.Insert(list[i]);
+  } 
+}
 
 int main(){
   int pocet;
