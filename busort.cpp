@@ -132,16 +132,29 @@ vector <int> QuickSort(vector<int> list) {
 class BuHeap{
   vector <int> heap;
   
-  vector <int> Insert(int bu_new){
+  void Insert(int bu_new){
     heap.push_back(bu_new);
-    int position_new = heap.size();
+    int position_new = heap.size() - 1;
     while(heap[position_new] < heap[position_new / 2]){
         swap(heap[position_new], heap[position_new / 2]);
         position_new = position_new / 2;
     }
   }
   
-  vector <int> PopMin(vector<int> heap){
+  int PopMin(){
+    swap(heap[0], heap[heap.size() - 1]);
+    int position_start = 0;
+    while(heap[2 * position_start +1 ] < heap[position_start]){
+        swap(heap[position_start], heap[2 * position_start +1 ]);
+        position_start = 2 * position_start +1;
+    }
+    while(heap[2 * position_start + 2] < heap[position_start]){
+        swap(heap[position_start], heap[2 * position_start + 2]);
+        position_start = 2 * position_start + 2;
+    }
+    int min = heap[heap.size() - 1];
+    heap.pop_back();
+    return min; 
   }
 };
 
