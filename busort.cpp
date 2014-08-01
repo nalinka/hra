@@ -130,9 +130,9 @@ vector <int> QuickSort(vector<int> list) {
 }
 
 class BuHeap{
- public: 
-  vector <int> heap;
  private: 
+  vector <int> heap;
+ public: 
   void Insert(int bu_new){
     heap.push_back(bu_new);
     int position_new = heap.size() - 1;
@@ -142,7 +142,7 @@ class BuHeap{
     }
   }
   
-  int PopMin(){
+  void PopMin(){
     swap(heap[0], heap[heap.size() - 1]);
     int position_start = 0;
     while(heap[2 * position_start +1 ] < heap[position_start] || heap[2 * position_start + 2] < heap[position_start]){
@@ -156,17 +156,34 @@ class BuHeap{
         position_start = 2 * position_start + 2;
       }
     }
-    int min = heap[heap.size() - 1];
     heap.pop_back();
-    return min; 
+  }
+  
+  int Top() {
+  	if (heap.size() != 0)
+	    return heap[0];
+	fprintf(stderr, "Requesting top of an empty que\n");
+	return -1;
+  }
+  
+  void Print() {
+  	PrintVector(heap);
   }
 };
 
 vector <int> HeapSort(vector<int> list) {
   BuHeap heap;
   for(int i =0; i < list.size(); i++){
-    BuHeap::heap.Insert(list[i]);
-  } 
+    heap.Insert(list[i]);
+    heap.Print();
+  }
+  vector<int> ret;
+  for(int i =0; i < list.size(); i++){
+    ret.push_back(heap.Top());
+    heap.PopMin();
+    heap.Print();
+  }
+  return ret;
 }
 
 int main(){
@@ -177,10 +194,11 @@ int main(){
   for(int i = 0 ; i < pocet; i++) {
     scanf("%d", &list[i]);
   }
-  list = QuickSort(list);
+  //list = QuickSort(list);
   //list = MergeSort(list);
   //list = BubbleSort(list);
   //list = InsertSort(list);
+  list = HeapSort(list);
   
   PrintVector(list);
 }
