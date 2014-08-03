@@ -1,6 +1,12 @@
-#include <vector>
-#include <cstdio>
 #include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <functional>
+#include <sys/time.h>
+#include <unistd.h>
+#include <vector>
 
 using namespace std;
 
@@ -29,6 +35,8 @@ vector <int> BubbleSort(vector<int> list) {
 }
 
 vector <int> InsertSort(vector<int> list) {
+  printf("Ja som insert sort a dostal som: ");
+  PrintVector(list);
   for(int i = 1; i < list.size(); i++) {
     for(int j = i - 1; j >= 0 ; j--) {
       if(list[j] < list[j-1]) {
@@ -36,6 +44,8 @@ vector <int> InsertSort(vector<int> list) {
        }
      } 
   }
+  printf("Ja som insert sort a vraciam: ");
+  PrintVector(list);
   return list; 
 }
 
@@ -146,18 +156,12 @@ class BuHeap{
   //ak ma jedno dieta porovnaj ho s prvok ak je mensie vymen ich
   //ak deti nema skonci
   void PopMin(){
-    PrintVector(heap);
     swap(heap[0], heap[heap.size() -1]);
-    printf("Vosiel som do popu");
-    PrintVector(heap);
     int position_start = 0;
     heap.pop_back();
     while(true){
       //ak nema deti
       if(heap.size() <= 2 * position_start + 1){
-        printf("%d \n", __LINE__);
-        printf("%d \n", position_start);
-        PrintVector(heap);
         break;
       }
       //ak ma jedno deta
@@ -165,37 +169,32 @@ class BuHeap{
         if(heap[2 * position_start + 1 ] < heap[position_start]){
           swap(heap[2 * position_start + 1 ], heap[position_start]);
         }
-        printf("%d \n", __LINE__);
-        printf("%d \n", position_start);
-        PrintVector(heap);
         break;
       }
    
       if(heap[2 * position_start +1 ] < heap[2 * position_start + 2 ]){
-        printf("%d \n", __LINE__);
         swap(heap[position_start], heap[2 * position_start + 1]);
         position_start = 2 * position_start +1;
-        printf("%d \n", position_start);
-        PrintVector(heap);
       } else{
-        printf("%d \n", __LINE__);
         swap(heap[position_start], heap[2 * position_start + 2]);
         position_start = 2 * position_start + 2;
-        printf("%d \n", position_start);
-        PrintVector(heap);
       }
     }
   }
   
+  bool Empty() {
+    return heap.size() == 0;
+  }
+  
   int Top() {
-  	if (heap.size() != 0)
-	    return heap[0];
-	fprintf(stderr, "Requesting top of an empty que\n");
-	return -1;
+    if (heap.size() != 0)
+      return heap[0];
+    fprintf(stderr, "Requesting top of an empty que\n");
+    return -1;
   }
   
   void Print() {
-  	PrintVector(heap);
+    PrintVector(heap);
   }
 };
 
@@ -205,16 +204,85 @@ vector <int> HeapSort(vector<int> list) {
     heap.Insert(list[i]);
   }
   vector<int> ret;
-  heap.Print();
   for(int i =0; i < list.size(); i++){
     ret.push_back(heap.Top());
     heap.PopMin();
-    PrintVector(ret);
   }
   return ret;
 }
 
+class Timer {
+  struct timeval start_;
+ public:
+  void Start() {
+    gettimeofday(&start_, NULL);
+  }
+  double GetMs() {
+    struct timeval cur;
+    gettimeofday(&cur, NULL);
+    return (cur.tv_sec - start_.tv_sec) * 1000 + 
+           (cur.tv_usec - start_.tv_usec) / 1000.0;
+  }
+};
+
+vector<int> StlSort(vector<int> input) {
+  sort(input.begin(), input.end());
+  return input;
+}
+
+void EvaluateSorts() {
+  srand(time(NULL));
+  Timer timer;
+  vector<int> samples;
+  vector<vector<double> > times;
+  for(double d = 1; d < 10; d *= sqrt(sqrt(10)))
+    samples.push_back(d);
+  vector<function<vector<int>(vector<int>)> > sorts;
+  // Add sorting algorithms.
+  sorts.push_back(InsertSort);
+  sorts.push_back(BubbleSort);
+  sorts.push_back(HeapSort);
+  sorts.push_back(MergeSort);
+  sorts.push_back(QuickSort);
+  sorts.push_back(StlSort);
+  
+  // For each sample size.
+  for(int i = 0; i < samples.size(); i++) {
+    printf("%7d \n", samples[i]);
+    vector<int> sample;
+    // Generate the sample and get correct answer to be able to check.
+    for(int j = 0; j < samples[i]; j++)
+      sample.push_back(rand() % 1000);
+    vector<int> correct = sample;
+    sort(correct.begin(), correct.end());
+    PrintVector(correct);
+
+    // Evaluate each sort.
+    for(int j = 0; j < sorts.size(); j++) {
+      timer.Start();
+      vector<int> answer = sorts[j](sample);
+      PrintVector(answer);
+//      printf("%7.2lf", timer.GetMs());
+
+      if (answer.size() != samples[i]) {
+        printf("Size mismatch %d %d on sort %d\n", answer.size(), samples[i], j);
+        continue;
+      }
+      for(int k = 0; k < samples[i]; k++)
+        if (answer[k] != correct[k]) {
+          printf("Sort %d gave wrong answer\n", j);
+          PrintVector(answer);
+          PrintVector(correct);
+          break;
+        }
+    }
+    printf("\n");
+  }
+}
+
 int main(){
+  EvaluateSorts();
+  return 0;
   int pocet;
   vector<int> list;
   scanf("%d", &pocet);
