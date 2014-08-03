@@ -35,17 +35,13 @@ vector <int> BubbleSort(vector<int> list) {
 }
 
 vector <int> InsertSort(vector<int> list) {
-  printf("Ja som insert sort a dostal som: ");
-  PrintVector(list);
   for(int i = 1; i < list.size(); i++) {
-    for(int j = i - 1; j >= 0 ; j--) {
+    for(int j = i; j > 0 ; j--) {
       if(list[j] < list[j-1]) {
           swap(list[j], list[j-1]);
        }
      } 
   }
-  printf("Ja som insert sort a vraciam: ");
-  PrintVector(list);
   return list; 
 }
 
@@ -171,7 +167,11 @@ class BuHeap{
         }
         break;
       }
-   
+      
+      if (heap[2 * position_start + 1] > heap[position_start] && 
+          heap[2 * position_start + 2] > heap[position_start]) {
+        break;
+      }
       if(heap[2 * position_start +1 ] < heap[2 * position_start + 2 ]){
         swap(heap[position_start], heap[2 * position_start + 1]);
         position_start = 2 * position_start +1;
@@ -184,6 +184,15 @@ class BuHeap{
   
   bool Empty() {
     return heap.size() == 0;
+  }
+  
+  bool CheckHeap() {
+    for(int i = 0; i < heap.size(); i++)
+      if (heap[(i - 1) / 2] > heap[i]) {
+        fprintf(stderr, "Heap error %d\n", i);
+        return false;
+      }
+    return true;
   }
   
   int Top() {
@@ -235,7 +244,7 @@ void EvaluateSorts() {
   Timer timer;
   vector<int> samples;
   vector<vector<double> > times;
-  for(double d = 1; d < 10; d *= sqrt(sqrt(10)))
+  for(double d = 1; d < 30000; d *= sqrt(sqrt(10)))
     samples.push_back(d);
   vector<function<vector<int>(vector<int>)> > sorts;
   // Add sorting algorithms.
@@ -248,21 +257,19 @@ void EvaluateSorts() {
   
   // For each sample size.
   for(int i = 0; i < samples.size(); i++) {
-    printf("%7d \n", samples[i]);
+    printf("%7d ", samples[i]);
     vector<int> sample;
     // Generate the sample and get correct answer to be able to check.
     for(int j = 0; j < samples[i]; j++)
       sample.push_back(rand() % 1000);
     vector<int> correct = sample;
     sort(correct.begin(), correct.end());
-    PrintVector(correct);
 
     // Evaluate each sort.
     for(int j = 0; j < sorts.size(); j++) {
       timer.Start();
       vector<int> answer = sorts[j](sample);
-      PrintVector(answer);
-//      printf("%7.2lf", timer.GetMs());
+      printf("%7.2lf", timer.GetMs());
 
       if (answer.size() != samples[i]) {
         printf("Size mismatch %d %d on sort %d\n", answer.size(), samples[i], j);
@@ -271,8 +278,10 @@ void EvaluateSorts() {
       for(int k = 0; k < samples[i]; k++)
         if (answer[k] != correct[k]) {
           printf("Sort %d gave wrong answer\n", j);
+          PrintVector(sample);
           PrintVector(answer);
           PrintVector(correct);
+          printf("\n\n", j);
           break;
         }
     }
@@ -293,8 +302,8 @@ int main(){
   //list = QuickSort(list);
   //list = MergeSort(list);
   //list = BubbleSort(list);
-  //list = InsertSort(list);
-  list = HeapSort(list);
+  list = InsertSort(list);
+  //list = HeapSort(list);
   
   PrintVector(list);
 }
