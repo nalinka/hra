@@ -141,7 +141,10 @@ class BuHeap{
         position_new = (position_new -1)/ 2;
     }
   }
-  
+  //prvy prvok v poly vymen s poslednym
+  //ak ma dve deti: porovnaj ich a ak tom mensie je mensie nez on vymen ich
+  //ak ma jedno dieta porovnaj ho s prvok ak je mensie vymen ich
+  //ak deti nema skonci
   void PopMin(){
     PrintVector(heap);
     swap(heap[0], heap[heap.size() -1]);
@@ -149,13 +152,20 @@ class BuHeap{
     PrintVector(heap);
     int position_start = 0;
     while(heap[2 * position_start +1 ] < heap[position_start] || heap[2 * position_start + 2] < heap[position_start]){
-      if(2 * position_start + 2  >= heap.size() -1){
+    
+      if(2 * position_start + 1  >= heap.size() -1){
         printf("%d \n", __LINE__);
         printf("%d \n", position_start);
         PrintVector(heap);
         break;
       }
-        
+      
+      if(2 * position_start + 2  >= heap.size() -1){
+        if(heap[2 * position_start +2 ] < heap[position_start]){
+          swap(heap[2 * position_start +2 ], heap[position_start]);
+        }
+      }
+   
       if(heap[2 * position_start +1 ] < heap[2 * position_start + 2 ]){
         printf("%d \n", __LINE__);
         swap(heap[position_start], heap[2 * position_start + 1]);
