@@ -151,19 +151,24 @@ class BuHeap{
     printf("Vosiel som do popu");
     PrintVector(heap);
     int position_start = 0;
-    while(heap[2 * position_start +1 ] < heap[position_start] || heap[2 * position_start + 2] < heap[position_start]){
-    
-      if(2 * position_start + 1  >= heap.size() -1){
+    heap.pop_back();
+    while(true){
+      //ak nema deti
+      if(heap.size() <= 2 * position_start + 1){
         printf("%d \n", __LINE__);
         printf("%d \n", position_start);
         PrintVector(heap);
         break;
       }
-      
-      if(2 * position_start + 2  >= heap.size() -1){
-        if(heap[2 * position_start +2 ] < heap[position_start]){
-          swap(heap[2 * position_start +2 ], heap[position_start]);
+      //ak ma jedno deta
+      if(heap.size() <= 2 * position_start + 2  ){
+        if(heap[2 * position_start + 1 ] < heap[position_start]){
+          swap(heap[2 * position_start + 1 ], heap[position_start]);
         }
+        printf("%d \n", __LINE__);
+        printf("%d \n", position_start);
+        PrintVector(heap);
+        break;
       }
    
       if(heap[2 * position_start +1 ] < heap[2 * position_start + 2 ]){
@@ -180,7 +185,6 @@ class BuHeap{
         PrintVector(heap);
       }
     }
-    heap.pop_back();
   }
   
   int Top() {
