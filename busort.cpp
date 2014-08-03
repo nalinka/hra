@@ -120,6 +120,8 @@ vector <int> QuickSort(vector<int> list) {
   vector <int> left;
   vector <int> right;
   
+  PrintVector(list);
+  printf("%d %d\n", sp, list.size());
   for(int i = 0; i < sp; i++){
     left.push_back(list[i]);
   }
@@ -268,6 +270,7 @@ void EvaluateSorts() {
     // Evaluate each sort.
     for(int j = 0; j < sorts.size(); j++) {
       timer.Start();
+      printf("Going to run sort %d\n", j);
       vector<int> answer = sorts[j](sample);
       printf("%7.2lf", timer.GetMs());
 
