@@ -107,11 +107,12 @@ vector <int> QuickSort(vector<int> list) {
   swap(list[list.size() / 2], list[list.size() -1]);
   int sp = 0;
   int ep = list.size() - 2;
+  PrintVector(list);
   while(sp < ep){
     while(list[sp] < list[list.size() -1]){
       sp++;
     }
-    while(list[ep] >= list[list.size() -1]){
+    while(list[ep] >= list[list.size() -1] && ep >= 0){
       ep--;   
     }
     if(sp < ep)
@@ -120,17 +121,16 @@ vector <int> QuickSort(vector<int> list) {
   vector <int> left;
   vector <int> right;
   
-  PrintVector(list);
-  printf("%d %d\n", sp, list.size());
   for(int i = 0; i < sp; i++){
     left.push_back(list[i]);
   }
-  for(int i = sp; i < list.size(); i++){
+  for(int i = sp; i < list.size() - 1; i++){
     right.push_back(list[i]);
   }
   right = QuickSort(right);
   left = QuickSort(left);  
   
+  left.push_back(list[list.size() - 1]);
   for(int i = 0; i < right.size(); i++){
     left.push_back(right[i]);
   }
