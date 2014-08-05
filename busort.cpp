@@ -107,7 +107,6 @@ vector <int> QuickSort(vector<int> list) {
   swap(list[list.size() / 2], list[list.size() -1]);
   int sp = 0;
   int ep = list.size() - 2;
-  PrintVector(list);
   while(sp < ep){
     while(list[sp] < list[list.size() -1]){
       sp++;
@@ -246,15 +245,15 @@ void EvaluateSorts() {
   Timer timer;
   vector<int> samples;
   vector<vector<double> > times;
-  for(double d = 1; d < 30000; d *= sqrt(sqrt(10)))
+  for(double d = 1; d < 300000; d *= sqrt(sqrt(10)))
     samples.push_back(d);
   vector<function<vector<int>(vector<int>)> > sorts;
   // Add sorting algorithms.
-  sorts.push_back(InsertSort);
   sorts.push_back(BubbleSort);
-  sorts.push_back(HeapSort);
-  sorts.push_back(MergeSort);
+  sorts.push_back(InsertSort);
   sorts.push_back(QuickSort);
+  sorts.push_back(MergeSort);
+  sorts.push_back(HeapSort);
   sorts.push_back(StlSort);
   
   // For each sample size.
@@ -263,16 +262,15 @@ void EvaluateSorts() {
     vector<int> sample;
     // Generate the sample and get correct answer to be able to check.
     for(int j = 0; j < samples[i]; j++)
-      sample.push_back(rand() % 1000);
+      sample.push_back(rand() % 10000000);
     vector<int> correct = sample;
     sort(correct.begin(), correct.end());
 
     // Evaluate each sort.
     for(int j = 0; j < sorts.size(); j++) {
       timer.Start();
-      printf("Going to run sort %d\n", j);
       vector<int> answer = sorts[j](sample);
-      printf("%7.2lf", timer.GetMs());
+      printf("\t %.3lf", timer.GetMs());
 
       if (answer.size() != samples[i]) {
         printf("Size mismatch %d %d on sort %d\n", answer.size(), samples[i], j);
