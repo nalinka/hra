@@ -8,9 +8,11 @@
 #include <unistd.h>
 #include <vector>
 
+#define ADD_SORT(sort, sorts, names) {sorts.push_back(sort); names.push_back(#sort);}
+
 using namespace std;
 
-void PrintVector(vector<int> list) {
+void PrintVector(const vector<int> list) {
   printf("[ ");
   for(int i = 0; i < list.size(); i++){
     printf("%d ",list[i]);
@@ -136,6 +138,90 @@ vector <int> QuickSort(vector<int> list) {
   return left;
 }
 
+const bool mato_quick_sort_smart_pivot1 = true;
+const bool mato_quick_sort_smart_pivot2 = true;
+void MatoQuickSortInplace(vector<int>& list, int from, int to) {
+  // If array size <= 2
+  if (from + 2 >= to) {
+    if (from + 1 >= to)
+      return;
+    if (list[from] > list[from + 1])
+      swap(list[from], list[from + 1]);
+    return;
+  }
+  //Get pivot to the end.
+  if (mato_quick_sort_smart_pivot1 && to - from < 100) {
+    int a = from;
+    int b = to - 1;
+    int c = (from + to) / 2;
+    if (list[a] > list[b])
+      swap(a, b);
+    if (list[a] > list[c])
+      swap(a, c);
+    if (list[b] > list[c])
+      swap(b, c);
+    //a, b, c are now sorted and b is median pivot.
+    swap(list[b], list[to - 1]);
+  }
+  
+  //If sorted, done.
+  if (false && to - from < 10) {
+    bool sorted = true;
+    for(int i = from; i + 1 < to; i++)
+      if (list[i + 1] < list[i]) {
+        sorted = false;
+        break;
+      }
+    if (sorted)
+      return;
+  }
+  
+  int ps = from;
+  int pe = to - 2;
+  int pivot = list[to - 1];
+  while (ps < pe) {
+    while (list[ps] < pivot)
+      ps++;
+    while (list[pe] >= pivot && pe >= from)
+      pe--;
+    if(ps < pe)
+      swap(list[ps], list[pe]);
+  }
+  swap(list[ps], list[to - 1]);
+  
+  MatoQuickSortInplace(list, from, ps);
+  MatoQuickSortInplace(list, ps + 1, to);
+}
+
+vector <int> MatoQuickSort(vector<int> list) {
+  MatoQuickSortInplace(list, 0, list.size());
+  return list;
+}
+
+vector <int> RadixSort(vector<int> list) {
+  if (list.size() < 100)
+    return MatoQuickSort(list);
+  int n = sqrt(list.size()) * 5;
+  int max = 0;
+  for(int i = 0; i < list.size(); i++) {
+    max = max > list[i] ? max : list[i];
+  }
+  max++;
+  vector<vector<int> > buckets (n);
+  for(int i = 0; i < list.size(); i++) {
+//    printf("%lld %d\n", 1L * n * list[i] / max, buckets.size());
+    buckets[1L * n * list[i] / max].push_back(list[i]);
+  }
+  vector<int> ret;
+  vector<int> tmp;
+  ret.reserve(list.size());
+  for(int i = 0; i < buckets.size(); i++) {
+    tmp = MatoQuickSort(buckets[i]);
+    ret.insert(ret.end(), tmp.begin(), tmp.end());
+  }
+  return ret;
+}
+
 class BuHeap{
  private: 
   vector <int> heap;
@@ -240,57 +326,73 @@ vector<int> StlSort(vector<int> input) {
   return input;
 }
 
+void AssertSame(const vector<int>& a, const vector<int>& b, const vector<int>& sample) {
+  if (a.size() != b.size()) {
+    printf("Size mismatch %d %d\n", a.size(), sample.size());
+    exit(0);
+  }
+  for(int k = 0; k < a.size(); k++)
+    if (a[k] != b[k]) {
+      printf("Sort gave wrong answer\n");
+      PrintVector(sample);
+      PrintVector(a);
+      PrintVector(b);
+      printf("\n\n");
+      exit(0);
+    }
+}
+
 void EvaluateSorts() {
   srand(time(NULL));
   Timer timer;
   vector<int> samples;
   vector<vector<double> > times;
-  for(double d = 1; d < 300000; d *= sqrt(sqrt(10)))
+  int repeats = 30;
+  for(double d = 3; d < 100000000; d *= sqrt(sqrt(10)))
     samples.push_back(d);
   vector<function<vector<int>(vector<int>)> > sorts;
+  vector<string> sort_names;
   // Add sorting algorithms.
-  sorts.push_back(BubbleSort);
-  sorts.push_back(InsertSort);
-  sorts.push_back(QuickSort);
-  sorts.push_back(MergeSort);
-  sorts.push_back(HeapSort);
-  sorts.push_back(StlSort);
+//  ADD_SORT(BubbleSort, sorts, sort_names);
+//  ADD_SORT(InsertSort, sorts, sort_names);
+//  ADD_SORT(QuickSort, sorts, sort_names);
+//  ADD_SORT(MergeSort, sorts, sort_names);
+//  ADD_SORT(HeapSort, sorts, sort_names);
+//  ADD_SORT(MergeSort, sorts, sort_names);
+  ADD_SORT(MatoQuickSort, sorts, sort_names);
+  ADD_SORT(RadixSort, sorts, sort_names);
+  ADD_SORT(StlSort, sorts, sort_names);
   
+  printf("%9s","");
+  for(int j = 0; j < sorts.size(); j++)
+    printf("\t%13s", sort_names[j].c_str());
+  printf("\n");
   // For each sample size.
   for(int i = 0; i < samples.size(); i++) {
-    printf("%7d ", samples[i]);
+    printf("%9d", samples[i]);
     vector<int> sample;
     // Generate the sample and get correct answer to be able to check.
     for(int j = 0; j < samples[i]; j++)
-      sample.push_back(rand() % 10000000);
+      sample.push_back(rand() % 1000000000);
     vector<int> correct = sample;
     sort(correct.begin(), correct.end());
 
     // Evaluate each sort.
     for(int j = 0; j < sorts.size(); j++) {
-      timer.Start();
-      vector<int> answer = sorts[j](sample);
-      printf("\t %.3lf", timer.GetMs());
-
-      if (answer.size() != samples[i]) {
-        printf("Size mismatch %d %d on sort %d\n", answer.size(), samples[i], j);
-        continue;
+      double time_sum = 0;
+      for(int rep = 0; rep < repeats; rep++) {
+        timer.Start();
+        vector<int> answer = sorts[j](sample);
+        time_sum += timer.GetMs();
+        AssertSame(correct, answer, sample);
       }
-      for(int k = 0; k < samples[i]; k++)
-        if (answer[k] != correct[k]) {
-          printf("Sort %d gave wrong answer\n", j);
-          PrintVector(sample);
-          PrintVector(answer);
-          PrintVector(correct);
-          printf("\n\n", j);
-          break;
-        }
+      printf("\t%13.3lf", time_sum / repeats);
     }
     printf("\n");
   }
 }
 
-int main(){
+int main() {
   EvaluateSorts();
   return 0;
   int pocet;
