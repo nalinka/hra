@@ -5,6 +5,7 @@
 #include <ctime>
 #include <functional>
 #include <sys/time.h>
+#include <thread>
 #include <unistd.h>
 #include <vector>
 
@@ -222,6 +223,73 @@ vector <int> RadixSort(vector<int> list) {
   return ret;
 }
 
+void ParallelSortInplace(vector<int>& list, int from, int to) {
+  // If array size <= 2
+  if (from + 2 >= to) {
+    if (from + 1 >= to)
+      return;
+    if (list[from] > list[from + 1])
+      swap(list[from], list[from + 1]);
+    return;
+  }
+  //Get pivot to the end.
+  if (mato_quick_sort_smart_pivot1 && to - from < 100) {
+    int a = from;
+    int b = to - 1;
+    int c = (from + to) / 2;
+    if (list[a] > list[b])
+      swap(a, b);
+    if (list[a] > list[c])
+      swap(a, c);
+    if (list[b] > list[c])
+      swap(b, c);
+    //a, b, c are now sorted and b is median pivot.
+    swap(list[b], list[to - 1]);
+  }
+  
+  //If sorted, done.
+  if (false && to - from < 10) {
+    bool sorted = true;
+    for(int i = from; i + 1 < to; i++)
+      if (list[i + 1] < list[i]) {
+        sorted = false;
+        break;
+      }
+    if (sorted)
+      return;
+  }
+  
+  int ps = from;
+  int pe = to - 2;
+  int pivot = list[to - 1];
+  while (ps < pe) {
+    while (list[ps] < pivot)
+      ps++;
+    while (list[pe] >= pivot && pe >= from)
+      pe--;
+    if(ps < pe)
+      swap(list[ps], list[pe]);
+  }
+  swap(list[ps], list[to - 1]);
+  
+  int parallel_size_limit = 200*1000;
+  int a_size = ps - from;
+  int b_size = to - ps + 1;
+  if (a_size >= parallel_size_limit || b_size >= parallel_size_limit) {
+    thread th(&ParallelSortInplace, ref(list), from, ps);
+    ParallelSortInplace(list, ps + 1, to);
+    th.join();
+  } else {
+    MatoQuickSortInplace(list, from, ps);
+    MatoQuickSortInplace(list, ps + 1, to);
+  }
+}
+
+vector <int> ParallelSort(vector<int> list) {
+  ParallelSortInplace(list, 0, list.size());
+  return list;
+}
+
 class BuHeap{
  private: 
   vector <int> heap;
@@ -361,6 +429,7 @@ void EvaluateSorts() {
 //  ADD_SORT(MergeSort, sorts, sort_names);
   ADD_SORT(MatoQuickSort, sorts, sort_names);
   ADD_SORT(RadixSort, sorts, sort_names);
+  ADD_SORT(ParallelSort, sorts, sort_names);
   ADD_SORT(StlSort, sorts, sort_names);
   
   printf("%9s","");
@@ -370,6 +439,7 @@ void EvaluateSorts() {
   // For each sample size.
   for(int i = 0; i < samples.size(); i++) {
     printf("%9d", samples[i]);
+    fflush(stdout);
     vector<int> sample;
     // Generate the sample and get correct answer to be able to check.
     for(int j = 0; j < samples[i]; j++)
@@ -387,6 +457,7 @@ void EvaluateSorts() {
         AssertSame(correct, answer, sample);
       }
       printf("\t%13.3lf", time_sum / repeats);
+      fflush(stdout);
     }
     printf("\n");
   }
